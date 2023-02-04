@@ -1,0 +1,167 @@
+{% extends 'apps/admin/admin_base.html' %}
+{% load static %}
+{% block main %}
+    <main class="admin-template">
+        <section class="main">
+
+            <div class="container border-bottom-4">
+                <div class="content_name_block">
+                    <a href="{% url 'admin_page' %}" class="content_name_block_back">
+                        <span class="icon-arrow"></span>
+                    </a>
+                    <div class="content_name_block_text"><p> So'rovlar </p></div>
+                </div>
+            </div>
+
+
+            <div class="container">
+                <div class="content_favorite">
+                    <div class="row">
+                        <div class="col">
+                            <form class="request-search-form input-group mb-0 px-2" method="get" action="{% url 'admin_requests' %}">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-info" style="border: 1px solid #ddd" type="button"
+                                            onclick="$('.market-search-input').val(''); $('.request-search-form').submit()"
+                                            id="button-addon1">X
+                                    </button>
+                                </div>
+
+                                <input type="text" class="form-control market-search-input" name="search"
+                                       placeholder="So'rovlar bo'yicha qidiruv"
+                                       data-request-update="'admin/requests-table': '#marketRequestList'"
+                                       aria-describedby="button-addon2"
+                                       data-track-input="500"
+                                       data-request-flash/>
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" data-attach-loading type="submit"
+                                            id="button-addon2">
+                                        Izlash
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="header_tab_menu">
+                                <div class="header_menu" style="overflow: auto">
+
+                                    <a href="/admin/requests/new" class="btn btn-default "> Yangi </a>
+
+                                    <a href="/admin/requests/accepted" class="btn btn-default "> Dostavkaga tayyor </a>
+
+                                    <a href="/admin/requests/sent" class="btn btn-default "> Yetkazilmoqda </a>
+
+                                    <a href="/admin/requests/delivered" class="btn btn-default "> Yetkazib berildi </a>
+
+                                    <a href="/admin/requests/cancelled" class="btn btn-default "> Qaytib keldi </a>
+
+                                    <a href="/admin/requests/pending" class="btn btn-default "> Keyin oladi </a>
+
+                                    <a href="/admin/requests/archived" class="btn btn-default "> Arxiv </a>
+
+                                    <a href="/admin/requests/spam" class="btn btn-default "> Spam </a>
+
+                                    <a href="{% url 'admin_requests' %}" class="btn btn-default active"> Barchasi </a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div id="marketRequestList" class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                            <tr class="text-center">
+                                <th scope="col">#</th>
+                                <th scope="col">Mahsulot</th>
+                                <th scope="col">Buyurtmachi / Manzil</th>
+                                <th scope="col">Holat</th>
+                                <th scope="col">Izoh</th>
+                                <th scope="col">Sana</th>
+                                <th scope="col">Oqim</th>
+                            </tr>
+                            </thead>
+
+                            <tbody class="text-center">
+                            {% for order in orders %}
+                                <tr style="background-color:
+                                        {% if order.order_operator == 'not answered' %} #e24848 {% else %}rgba(46, 204, 113, 0.3){% endif %}">
+                                    <td> {{ order.id }} <br>
+                                        Operator: {{ order.order_operator }}
+                                    </td>
+                                    <td>
+                                        {{ order.product.title }}
+                                    </td>
+                                    <td><strong>{{ order.name }} - {{ order.phone }} </strong>
+                                        <br> {{ order.order_address }}
+                                        Oʻziga
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-success">{{ order.status }}</span><br>
+                                        <br><strong style="color: red">{{ order.status_date }}</strong>
+                                    </td>
+                                    <td>{{ order.coment }}
+                                    </td>
+                                    <td><strong><a
+                                            href="/admin/request-timeline/1169887"> {{ order.order_date }} </a></strong>
+                                    </td>
+                                    <td>
+                                        {{ order.stream.name }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                        <div class="pagination">
+                            <div style="text-align: center">
+                                <span class="step-links">
+                                    {% if page_obj.has_previous %}
+                                        <a class="btn btn-info"
+                                           href="?page={{ page_obj.previous_page_number }}">← Oldingi sahifa</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        <strong> &nbsp;&nbsp;&nbsp; {{ page_obj.number }} &nbsp;&nbsp;&nbsp; </strong>
+                                    </span>
+
+                                    {% if page_obj.has_next %}
+                                        <a class="btn btn-info" href="?page={{ page_obj.next_page_number }}">Keyingi sahifa → </a>
+
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+
+                        <hr>
+                        <p class="text-muted"> Ko'rsatilmoqda <strong>1</strong> dan <strong>50</strong> gacha,
+                            jami:
+                            <strong></strong> ta so'rov </p>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <style>
+            .header_menu {
+                padding: 12px;
+            }
+
+            .header_menu .btn-default {
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                padding: 10px;
+                font-size: 15px;
+            }
+
+            .header_menu .btn-default.active, .header_menu .btn-default:hover {
+                background-color: #000;
+                color: #fff;
+            }
+        </style>
+    </main>
+{% endblock %}

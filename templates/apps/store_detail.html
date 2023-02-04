@@ -1,0 +1,85 @@
+{% extends 'apps/parts/base.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'apps/combine/profile.css' %}">
+{% endblock %}
+{% block main %}
+    <main class="client-template">
+        <div class="container" style="padding-top: 10px;">
+            <div class="profile">
+                <div class="profile-info">
+                    <div class="profile-info-avatar">
+                        <div class="profile-info-avatar-container">
+                            <img src="{{ store.image.url }}"
+                                 alt="img">
+                        </div>
+                    </div>
+                    <div class="profile-info-text">
+                        <div class="profile-info-name">
+                            <h1>
+                                <span> {{ store.name }} </span>
+                                <img src="https://100k.uz/themes/stock/assets/img/blue-tick.jpg" alt="img" width="16">
+                            </h1>
+                        </div>
+                        <div class="profile-info-stats">
+                            <div class="profile-info-stat">
+                                <strong>{{ store.product_set.count }}</strong>
+                                <span> mahsulotlar </span>
+                            </div>
+
+                            <div class="profile-info-stat">
+                                <strong> </strong>
+                                <span> {{ store.short_des }} </span>
+                            </div>
+
+                            <!--
+                            <div class='profile-info-stat'>
+                                <strong>224м</strong>
+                                <span>товаров</span>
+                            </div> -->
+                        </div>
+
+                        <div class="profile-info-props">
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="profile-market pt-2">
+                    <div class="container" id="productsList">
+                        <div class="content_grid">
+                            <div class="row">
+
+                                {% for product in store.product_set.all %}
+                                    <div class="col-sm-3 col-4" style="padding: 1px">
+                                        <div class="content_grid_card" style="padding: 0px">
+                                            <a href="{% url 'product_detail' product.slug %}">
+                                                <img loading="lazy" class=" ls-is-cached lazyloaded"
+                                                     src="{{ product.image_url }}"
+                                                     alt="Bolajonlar uchun proektor">
+                                            </a>
+
+                                            <a class="content_grid_card_basket" data-request="onBookmark"
+                                               data-request-data="id: 789"
+                                               data-request-success="$(this).find('span').toggleClass('text-success')"
+                                               data-request-flash="" href="javascript:">
+                                                <span class="icon-bookmark "></span>
+                                            </a>
+
+                                            <div class="content_grid_card_price">
+                                                <p> 187,000 so'm </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div style="height: 80vh"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

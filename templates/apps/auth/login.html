@@ -1,0 +1,83 @@
+{% extends 'apps/parts/base.html' %}
+{% load static %}
+{% block main %}
+    <main class="flex-fill bg-gradient-to-b from-[#e3d7d0] to-[#f3e2c0] flex flex-col items-center">
+        <div class="my-auto flex flex-col items-center">
+            <a class="text-4xl font-medium font-cursive hover:text-primary transition-all duration-200" href="/">
+                100k.uz
+            </a>
+            <h2 class="text-lg font-medium my-2">Tizimga kirish</h2>
+
+            <form class="flex flex-col items-stretch gap-2" x-data="{phone: ''}" id="authForm" method="post">
+                {% csrf_token %}
+                {% if message %}
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script>
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: '{{ message }}',
+                            showConfirmButton: false,
+                            toast: true,
+                            timerProgressBar: true,
+                            timer: 5000
+                        })
+                    </script>
+                {% endif %}
+                {% if password %}
+                    <input type="text" class="rounded-xl px-4 py-1.5" value="{{ phone }}" disabled>
+                    <input type="number" class="rounded-xl px-4 py-1.5" placeholder="Sms kodni kiriting"
+                           name="password" min="5" maxlength="5" required>
+                    <input type="hidden" name="phone" value="{{ phone }}">
+                {% else %}
+                    <input type="text"
+                           class="rounded-xl px-4 py-1.5"
+                           placeholder="Telefon raqamingizni kiring" x-mask="+998(99) 999-99-99"
+                           x-on:focus="!$event.target.value.startsWith('+998') ? $event.target.value = '+998' : ''"
+                           x-on:blur="$event.target.value == '+998(' || $event.target.value == '+998' ? $event.target.value = '': ''"
+                           x-ref="phone" x-model="phone" name="phone" autocomplete="off">
+
+                    <label for="checkboxField" class="select-none cursor-pointer group relative">
+                        <input class="" type="checkbox" required="" id="checkboxField">
+                        Men <a class="text-primary hover:text-primary/70 font-medium transition-all duration-200"
+                               href="/pages/privacy-policy" target="_blank">
+                        foydalanish shartlari
+                    </a> bilan tanishdim.
+                    </label>
+                {% endif %}
+                {% if not password %}
+                    <button class="px-4 py-1.5 rounded-xl
+            bg-black
+            text-white
+            shadow-lg shadow-black/50 hover:shadow-primary/50
+            hover:bg-primary
+            disabled:bg-gray-200
+            disabled:shadow-none
+            disabled:text-black
+            transition-all duration-200" type="submit" x-bind:disabled="phone.length < 18" data-attach-loading=""
+                            disabled="disabled">
+                        Raqamni tekshirish
+                    </button>
+                {% else %}
+                    <button class="px-4 py-1.5 rounded-xl
+            bg-black
+            text-white
+            shadow-lg shadow-black/50 hover:shadow-primary/50
+            hover:bg-primary
+            disabled:bg-gray-200
+            disabled:shadow-none
+            disabled:text-black
+            transition-all duration-200" type="submit">
+                        Tizimga kirish
+                    </button>
+                {% endif %}
+            </form>
+        </div>
+        <div class="text-sm flex justify-center flex-wrap gap-2 mb-2">
+            <a class="hover:text-primary transition duration-200" target="_blank" href="#"> Maxfiylik siyosati </a> |
+            <a class="hover:text-primary transition duration-200" target="_blank" href="/pages/privacy-policy">
+                Foydalanish shartlari </a> |
+            <span class="">Copyright © 2020 Barcha huquqlar himoyalangan</span>
+        </div>
+    </main>
+{% endblock %}

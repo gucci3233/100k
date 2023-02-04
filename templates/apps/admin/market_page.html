@@ -1,0 +1,253 @@
+{% extends 'apps/admin/admin_base.html' %}
+{% load static %}
+{% block main %}
+    <main class="admin-template">
+        <section class="main">
+            <div class="container">
+                <br>
+                <h3 class="text-center"> Hozirda sotuvda bor<br> mahsulotlar </h3>
+                <br>
+                <div class="container market-search-form">
+                    <form method="get" data-bs-request="onMarketSearch"
+                          data-request-update="'admin/market-products': '#marketProductsList'" data-request-flash=""
+                          class="input-group mb-0 px-2">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-info" style="border: 1px solid #ddd" type="button"
+                                    onclick="$('.market-search-input').val('');"
+                                    id="button-addon1">X
+                            </button>
+                        </div>
+
+                        <input value="{{ search_input }}" type="text" class="form-control market-search-input"
+                               name="search"
+                               placeholder="Mahsulotlar bo'yicha qidiruv" aria-label="Mahsulotlar bo'yicha qidiruv">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" data-attach-loading="" type="submit" id="button-addon2">
+                                Izlash
+                            </button>
+                        </div>
+                    </form>
+                    <div class="header_tab_menu">
+                        <div class="header_menu" style="overflow: auto">
+                            <a href="{% url 'market' %}?category=new" class="btn btn-default">Yangi 🕒 </a>
+                            <a href="{% url 'market' %}?category=new" class="btn btn-default">TOP ⭐ </a>
+                            {% for category in categories %}
+                                {% if category.product_count > 0 %}
+                                    <a href="{% url 'market' %}?category={{ category.slug }}"
+                                       class="btn btn-default "> {{ category.title }}
+                                        ({{ category.product_count }}) </a>{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="marketProductsList" class="row">
+                    {% for product in products %}
+                        <div class="col-sm-4 p-2">
+                            <div class="card">
+                                <a href="{% url 'product_detail' product.slug %}" target="_blank">
+                                    <img width="274.46" height="182.97" class="card-img-top"
+                                         src="{{ product.productimage_set.first.image.url }}"
+                                         alt="{{ product.title }}" style="width:274.46px;height:182.97px;">
+                                </a>
+
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'product_detail' product.slug %}"
+                                                              target="_blank">
+                                        {{ product.title }}</a></h5>
+                                    <p class="text-muted"> {{ product.price }} so'm </p>
+                                </div>
+
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">To'lov: <strong>{{ product.bonus }} so'm</strong></li>
+                                    <li class="list-group-item">Sotuvchi: <strong>{{ product.store.name }}</strong></li>
+                                    <li class="list-group-item">Bepul yetkazish: <strong>{% if product.free_delivery %}
+                                        Bor{% else %}Yo'q{% endif %}</strong></li>
+                                    <li class="list-group-item">Zaxirada:
+                                        <strong class="text"> {{ product.reserve }} ta </strong>
+                                    </li>
+
+                                    <li class="list-group-item"> 👉 <a href="">Reklama posti</a></li>
+                                </ul>
+
+                                <div class="card-body text-center">
+                                    <input type="text" id="product_title_{{ product.id }}" hidden
+                                           value="{{ product.title }}">
+                                    <input type="text" id="product_price_{{ product.id }}" hidden
+                                           value="{{ product.price }}">
+                                    <button href="#" data-bs-request="onCreateStreamModal"
+                                            data-bs-product-id="{{ product.id }}"
+                                            data-bs-product-title="{{ product.title }}"
+                                            data-bs-product-price="{{ product.price }}"
+                                            data-bs-toggle="modal" data-bs-target="#exampleModalCenter"
+                                            class="btn btn-primary" id="submit" onclick="myFunction({{ product.id }})">
+                                        Oqim yaratish
+                                    </button>
+                                    <a href="{% url 'admin_product_detailview' product.id %}" class="btn btn-default">
+                                        Batafsil</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                <div style="text-align: center">
+                    {% if page_obj.has_other_pages %}
+                        {% if page_obj.has_previous %}
+                            <a class="btn info " href="?page={{ page_obj.previous_page_number }}"> ← Oldingi sahifa </a>
+                        {% else %}
+                            <a class="btn disabled " href=""> ← Oldingi sahifa </a>
+                        {% endif %}
+                        <strong> &nbsp;&nbsp;&nbsp; {{ page_obj.number }} &nbsp;&nbsp;&nbsp; </strong>
+                        {% if page_obj.has_next %}
+                            <a class="btn btn-info" href="?page={{ page_obj.next_page_number }}"> Keyingi sahifa → </a>
+                        {% else %}
+                            <a class="btn disabled" href=""> Keyingi sahifa → </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <br>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+                    <div class="modal-dialog">
+                        <form class="modal-content" action="" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-header">
+                                <h5 class="modal-title"><label id="title"></label> - <strong id="price"></strong> bonus
+                                </h5>
+
+                                <button type="button" class="close"
+                                        data-bs-toggle="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label> Oqim nomi </label>
+                                    <input hidden class="form-control" id="product_id" name="product">
+                                    <input type="text" name="name" class="form-control">
+                                </div>
+
+                                <input type="hidden" name="type" value="market">
+
+                                <!-- hayriyaga yonaltirish -->
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                           id="isEnabledCharity" data-bs-toggle="collapse"
+                                           href="#charityCollapse" role="button" aria-expanded="false"
+                                           aria-controls="charityCollapse" onclick="
+                                                            $('#charityCollapse').find('input').val();
+                                                            $('#discountedPrice').text( 1000 + ' so\'m')
+                                                            ">
+
+                                    <label class="form-check-label" for="isEnabledCharity">
+                                        Daromadning bir qismini hayriya ishlariga yo'naltirish
+                                    </label>
+                                </div>
+
+                                <div class="collapse multi-collapse" id="charityCollapse"
+                                     style="margin-bottom: 10px;">
+                                    <div class="card card-body badge-success">
+                                        <div class="form-group">
+                                            <label> Hayriya ajratiladigan summa har bir
+                                                buyurtmadan </label>
+                                            <input type="number" min="100" max="5000" name="donation"
+                                                   class="form-control">
+
+                                            <p>min: <strong>100</strong> so'm - <strong>max:
+                                                5000</strong> so'm </p>
+                                        </div>
+                                        Yuqorida kiritilgan summa <strong>ushbu oqim buyurtmasi</strong>
+                                        yetqazib berilganda admin hisobidan ushlab qolinadi. Istalgan
+                                        kishi 100 somdan 5000 so'mgacha o'z daromatidan hayriya
+                                        ishlariga mablag' ajratishi mumkin. Yig'ilgan mablag'ni
+                                        kabinetidagi <a href="/admin/charity"
+                                                        style="color: white; text-decoration: underline;">hayriya
+                                        qutisi</a> sahifasida kuzatishingiz mumkin.
+                                    </div>
+                                </div>
+
+
+                                <!-- mahsulotga skidka -->
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="exampleCheck1"
+                                           data-bs-toggle="collapse" href="#multiCollapseExample1"
+                                           role="button" aria-expanded="false"
+                                           aria-controls="multiCollapseExample1" onclick="
+                                            $('#multiCollapseExample1').find('input').val();
+                                            $('#discountedPrice').text( {{ product.price }} + ' so\'m')
+                                            ">
+
+                                    <label class="form-check-label" for="exampleCheck1">
+                                        Mahsulot narxini tushurish
+                                    </label>
+                                </div>
+
+                                <div class="collapse multi-collapse" id="multiCollapseExample1">
+                                    <div class="card card-body bg-warning">
+                                        <div class="form-group">
+                                            <label> Chegirma miqdori</label>
+                                            <input type="number" min="0" max="40000" name="reduce"
+                                                   class="form-control" oninput="
+                                                    $('#currentAdminFee').text(50000 - $(this).val()  + ' so\'m');
+                                                    $('#discountedPrice').text({{ product.price }} - $(this).val()  + ' so\'m');
+                                                    ">
+                                            <p>min: <strong>5000</strong> so'm - <strong>max:
+                                                40000</strong> so'm </p>
+                                        </div>
+                                        Diqqat! Mahsulot narxini tushurish admin bonusi evaziga amalga
+                                        oshiriladi.
+                                        Chegirma miqdorini kiritishdan oldin reklama harajatlarini
+                                        hisobga oling.
+                                        <hr>
+                                        <p>Birinchi mahsulot narxi: &nbsp;
+                                            <strike> so'm </strike> &nbsp;&nbsp;
+                                            <span
+                                                    style="font-size: 16px;" id="discountedPrice"
+                                                    class="badge badge-success"> 1000 so'm </span>
+                                            &nbsp;</p>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="text-center">
+                                    <button type="submit" data-bs-request-loading=""
+                                            class="btn btn-primary"> Oqim yaratish
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            .btn.active {
+                color: #fff;
+            }
+
+            .header_menu {
+                padding: 12px;
+            }
+
+            .header_menu .btn-default {
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                padding: 10px;
+                font-size: 15px;
+            }
+
+            .header_menu .btn-default.active, .header_menu .btn-default:hover {
+                background-color: #000;
+            }
+        </style>
+    </main>
+
+{% endblock %}

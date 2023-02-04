@@ -1,0 +1,125 @@
+{% extends 'apps/admin/admin_base.html' %}
+{% load static %}
+{% block main %}
+    <main class="admin-template">
+        <section class="main">
+
+            <div class="container border-bottom-4">
+                <div class="content_name_block">
+                    <a href="{% url 'admin_page' %}" class="content_name_block_back"><span
+                            class="icon-arrow"></span></a>
+                    <div class="content_name_block_text"><p> Balans tarixi </p></div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="content_favorite">
+                    <div class="row">
+                        <div class="col">
+                            <form data-request="onTransactionsSearch"
+                                  data-request-update="'admin/transactions-table': '#userTransactions'"
+                                  data-request-flash class="request-search-form input-group mb-0 p-4">
+
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-info" style="border: 1px solid #ddd" type="button"
+                                            onclick="$('.market-search-input').val(''); $('.request-search-form').submit()"
+                                            id="button-addon1">X
+                                    </button>
+                                </div>
+
+                                <input type="text" class="form-control market-search-input" name="search"
+                                       placeholder="Tranzaksiyalar bo'yicha qidiruv"
+                                       data-request-update="'admin/transactions-table': '#userTransactions'"
+                                       aria-describedby="button-addon2"
+                                       data-request="onTransactionsSearch"
+                                       data-track-input="500"
+                                       data-request-flash/>
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" data-attach-loading type="submit"
+                                            id="button-addon2">
+                                        Izlash
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div id="userTransactions" class="table-responsive">
+                            <table class="table">
+                                <thead class="thead-light">
+                                <tr class="text-center">
+                                    <th scope="col">+ / -</th>
+                                    <th scope="col">Summa</th>
+                                    <th scope="col">Komment</th>
+                                    <th scope="col">Sana</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                {% for history in histories %}
+                                    <tr style="background-color: {% if history.status == 'cleared' %}
+
+                                        rgba(241, 196, 15, .5) {% else %} rgba(46, 204, 113, .5) {% endif %}">
+                                        <td> {{ history.id }} <img style="width: 30px"
+                                                {% if history.status == 'cleared' %}
+                                                                   src="https://100k.uz/themes/stock/assets/icons/transaction-minus.png"
+                                                {% else %}
+                                                                   src="https://100k.uz/themes/stock/assets/icons/transaction-plus.png"
+                                                {% endif %}
+                                                                   alt="">
+                                        </td>
+                                        <td> {{ history.summa }}</td>
+                                        <td>{{ history.coment }}</td>
+                                        <td>{{ history.get_date }}</td>
+                                    </tr>
+                                {% endfor %}
+
+
+                                </tbody>
+                            </table>
+
+                            {#                            <div class="pagination">#}
+                            {#                                <div style="text-align: center">#}
+                            {#                                <span class="step-links">#}
+                            {#                                    {% if page_obj.has_previous %}#}
+                            {#                                        <a class="btn btn-info"#}
+                            {#                                           href="?page={{ page_obj.previous_page_number }}">← Oldingi sahifa</a>#}
+                            {#                                    {% endif %}#}
+                            {##}
+                            {#                                    <span class="current">#}
+                            {#                                        <strong> &nbsp;&nbsp;&nbsp; {{ page_obj.number }} &nbsp;&nbsp;&nbsp; </strong>#}
+                            {#                                    </span>#}
+                            {##}
+                            {#                                    {% if page_obj.has_next %}#}
+                            {#                                        <a class="btn btn-info" href="?page={{ page_obj.next_page_number }}">Keyingi sahifa → </a>#}
+                            {##}
+                            {#                                    {% endif %}#}
+                            {#                                </span>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+
+                            <div class="pagination">
+                                <div style="text-align: center">
+                                    <span class="step-links">
+                                        {% if page_obj.has_previous %}
+                                            <a class="btn btn-info"
+                                               href="?page={{ page_obj.previous_page_number }}">← Oldingi sahifa</a>
+                                        {% endif %}
+                                        <strong> &nbsp;&nbsp;&nbsp; {{ page_obj.number }} &nbsp;&nbsp;&nbsp; </strong>
+                                        {% if page_obj.has_next %}
+                                            <a class="btn btn-info" href="?page={{ page_obj.next_page_number }}">Keyingi
+                                                sahifa → </a>
+
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
